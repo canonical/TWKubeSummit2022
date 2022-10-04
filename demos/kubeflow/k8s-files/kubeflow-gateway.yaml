@@ -1,0 +1,20 @@
+# kubeflow-gateway.yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: kubeflow-gateway
+  namespace: kubeflow
+  resourceVersion: "2203"
+  labels:
+    app.istio-pilot.io/is-workload-entity: "true"
+    app.juju.is/created-by: istio-pilot
+spec:
+  selector:
+    istio: ingressgateway # use Istio default gateway implementation
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - '*'

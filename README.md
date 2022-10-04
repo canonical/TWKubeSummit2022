@@ -12,6 +12,7 @@ In this tutorial, we will deploy kubeflow-lite & cos-lite on microk8s in a local
 
 ## Notes
 
+
 ### Create virtual machine
 
 ```sh
@@ -56,11 +57,12 @@ sudo chown -f -R ubuntu ~/.kube
 newgrp microk8s
 ```
 
+
 ### Configure microk8s
 
 Add alias in `~/.bash_aliases`
 
-```
+```sh
 alias kubectl='microk8s kubectl'
 ```
 
@@ -78,36 +80,6 @@ microk8s kubectl get namespace | grep controller | awk '{print $1}' | xargs micr
 juju controllers
 juju clouds
 ```
-
-### Deploy kubeflow
-
-```sh
-# upstream issus: https://github.com/kubeflow/manifests/issues/2087#issuecomment-1139260511
-sudo sysctl fs.inotify.max_user_instances=1280
-sudo sysctl fs.inotify.max_user_watches=655360
-
-juju add-model kubeflow
-juju models
-microk8s kubectl get namespace
-juju deploy kubeflow-lite --trust --debug
-watch -c juju status --color --relations
-microk8s kubectl get all -n kubeflow
-```
-
-**Need to wait PodInitializing here**
-
-```sh
-sudo apt install jq
-IPADDR=$(ip -4 -j route | jq -r '.[] | select(.dst | contains("default")) | .prefsrc')
-microk8s enable metallb:$IPADDR-$IPADDR
-
-juju config oidc-gatekeeper public-url=http://$IPADDR.nip.io
-juju config dex-auth public-url=http://$IPADDR.nip.io
-juju config dex-auth static-username=admin
-juju config dex-auth static-password=admin
-```
-
-The kubeflow databoard will alive at **$IPADDR.nip.io**
 
 
 ### Deploy cos-lite
@@ -187,7 +159,7 @@ declare -a arr=(
 
 for i in "${arr[@]}"
 do
-        echo "create cross model relation for $i" 
+        echo "create cross model relation for $i"
         juju relate $i:metrics-endpoint admin/cos.prometheus-scrape
         juju relate $i:grafana-dashboard admin/cos.grafana-dashboards
 done
