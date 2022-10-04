@@ -96,6 +96,7 @@ $ microk8s kubectl apply -f k8s-files/allow-mlflow.yaml -n admin
 
 ### Reference
 
+* [GitHub - canonical/bundle-kubeflow: Charmed Kubeflow](https://github.com/canonical/bundle-kubeflow)
 * [Kubeflow + MLflow on Juju with Microk8s](https://github.com/canonical/mlflow-operator)
 * [GitHub - canonical/bundle-kubeflow: Charmed Kubeflow](https://github.com/canonical/bundle-kubeflow)
 * [Quick start guide to Kubeflow | Documentation | Charmed Kubeflow](https://charmed-kubeflow.io/docs/quickstart)
