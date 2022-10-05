@@ -1,6 +1,6 @@
 #!/bin/bash
 
-curl  -s http://localhost:8000/api/v0.1/predictions \
+curl http://localhost:8000/api/v0.1/predictions \
   -H "Content-Type: application/json" \
   -d '{"data":{"ndarray":[[10.1, 0.37, 0.34, 2.4, 0.085, 5.0, 17.0, 0.99683, 3.17, 0.65, 10.6],[10.1, 0.37, 0.34, 2.4, 0.085, 5.0, 17.0, 0.99683, 3.17, 0.65, 10.6]]}}'
 
