@@ -35,6 +35,11 @@ $ juju config dex-auth static-password=admin
 
 The kubeflow dashboard will available at `$IPADDR.nip.io`
 
+> :warning: if you notice that you cannot access the dashboard, please check if
+> `kubeflow-gateway` is present (run `microk8s kubectl get gateway -A` to verify).
+> If the output is `No resources found.`, then you can create the gateway by
+> `microk8s kubectl apply -f k8s-files/kubeflow-gateway.yaml`
+
 To run this demo, we will also need mlflow.
 
 ```sh
@@ -52,6 +57,7 @@ commands.
 ```sh
 $ microk8s kubectl get svc mlflow-server -nkubeflow
 ```
+
 
 ## Validate Minio Access
 
@@ -93,6 +99,44 @@ For example, if the user is the "admin" namespace:
 $ microk8s kubectl apply -f k8s-files/allow-minio.yaml -n admin
 $ microk8s kubectl apply -f k8s-files/allow-mlflow.yaml -n admin
 ```
+
+### Copying the seldon deployment secret from kubeflow to admin
+
+See github issues: https://github.com/canonical/mlflow-operator/pull/27
+
+```sh
+$ microk8s kubectl get secret localdockerreg --namespace=kubeflow -oyaml | grep -v '^\s*namespace:\s' | kubectl apply --namespace=admin -f -
+```
+
+### Running the demo
+
+You should first navigate to the kubeflow dashboard at `$IPADDR.nip.io` and
+create a jupyter notebook server under the "Notebook" tab in the sidebar. Then,
+you can choose an appropriate cpus and memory for your server; the
+default value is good enough for this demo. Also, check
+
+- `Allow access to Minio`
+- `Allow access to MLFlow`
+
+so that the necessary environment variables will be imported to the notebook
+server.
+
+![Create notebook server - 1](./assets/create_server_1.png)
+![Create notebook server - 2](./assets/create_server_2.png)
+
+You can either choose to run the demo with the python script by first installing
+the required package `pip install -r requirement.txt`, and then run `python3
+pipeline.py` to build, train, and deploy the model. Or you can follow the
+notebook `e2e-kfp-mlflow-seldon-pipeline.ipynb` that basically do the same thing
+as the python script.
+
+After running the script or notebook, you can view the result in the "Runs" tab
+and view the model in mlflow dashboard. For more information about demo, you can
+visit the [blog
+post](https://ubuntu.com/blog/mlops-pipeline-with-mlflow-seldon-core-and-kubeflow-pipelines).
+
+Lastly, you can try to make inference of new data using the script `sample-prediction.sh`.
+
 
 ### Reference
 
