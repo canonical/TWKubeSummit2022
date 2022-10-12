@@ -7,14 +7,24 @@
 
 ## Deploy kubeflow + mlflow
 
-```sh
-$ juju add-model kubeflow
-$ juju deploy kubeflow-lite --trust --debug
 
+Upstream too many open files issue
+
+```sh
 # workaround for upstream issues in kubeflow:
 # https://github.com/kubeflow/manifests/issues/2087#issuecomment-1139260511
 $ sudo sysctl fs.inotify.max_user_instances=1280
 $ sudo sysctl fs.inotify.max_user_watches=655360
+$ microk8s stop
+$ microk8s start
+```
+
+```sh
+$ juju add-model kubeflow
+$ juju deploy kubeflow-lite --trust --debug
+
+# Check events
+$ microk8s kubectl get events -n kubeflow -w
 ```
 
 ```sh
@@ -35,6 +45,10 @@ $ juju config dex-auth static-password=admin
 
 The kubeflow dashboard will available at `$IPADDR.nip.io`
 
+```sh
+sudo sshuttle -r ubuntu@$INSTANCE_IP_ADDRESS  10.1.123.0/24 --ssh-cmd "ssh -i /var/snap/multipass/common/data/multipassd/ssh-keys/id_rsa
+```
+
 > :warning: if you notice that you cannot access the dashboard, please check if
 > `kubeflow-gateway` is present (run `microk8s kubectl get gateway -A` to verify).
 > If the output is `No resources found.`, then you can create the gateway by
@@ -43,7 +57,7 @@ The kubeflow dashboard will available at `$IPADDR.nip.io`
 To run this demo, we will also need mlflow.
 
 ```sh
-$ juju deploy mlflow-server
+$ juju deploy mlflow-server --debug
 $ juju deploy charmed-osm-mariadb-k8s mlflow-db
 $ juju relate minio mlflow-server
 $ juju relate istio-pilot mlflow-server
@@ -72,7 +86,9 @@ If the values are not defined, apply a new user/password with the juju commands.
 
 ```sh
 $ juju config minio access-key=minio
-$ juju config minio secret-key=minio123
+$ kubectl get secret -n kubeflow minio-secret -o yaml | grep MINIO_SECRET_KEY | awk '{ print $2}' | base64 -d | xargs -I {} juju config minio secret-key={}
+
+$ juju config minio secret-key
 ```
 
 Test your access to Minio by accessing the dashboard. You can change the service
@@ -96,8 +112,8 @@ MLFlow manually.  Apply the files `k8s-files/allow-minio.yaml` and
 For example, if the user is the "admin" namespace:
 
 ```sh
-$ microk8s kubectl apply -f k8s-files/allow-minio.yaml -n admin
-$ microk8s kubectl apply -f k8s-files/allow-mlflow.yaml -n admin
+wget -q -O - https://raw.githubusercontent.com/canonical/kubeflow-on-microk8s-example/main/demos/kubeflow/k8s-files/allow-minio.yaml | microk8s kubectl apply -n admin -f -
+wget -q -O - https://raw.githubusercontent.com/canonical/kubeflow-on-microk8s-example/main/demos/kubeflow/k8s-files/allow-mlflow.yaml | microk8s kubectl apply -n admin -f -
 ```
 
 ### Copying the seldon deployment secret from kubeflow to admin
@@ -105,7 +121,32 @@ $ microk8s kubectl apply -f k8s-files/allow-mlflow.yaml -n admin
 See github issues: https://github.com/canonical/mlflow-operator/pull/27
 
 ```sh
-$ microk8s kubectl get secret localdockerreg --namespace=kubeflow -oyaml | grep -v '^\s*namespace:\s' | kubectl apply --namespace=admin -f -
+$ microk8s kubectl get secret -n kubeflow mlflow-server-seldon-init-container-s3-credentials -o yaml > seldon-init-container-secret.yaml
+
+```
+
+Update yaml:
+* RCLONE_CONFIG_S3_ENDPOINT to `echo -n http://minio.kubeflow.svc.cluster.local:9000 | base64 -w 0`
+* namespace=`admin`
+* metadata.name=`seldon-init-container-secret`
+
+```yaml
+apiVersion: v1
+data:
+  RCLONE_CONFIG_S3_ACCESS_KEY_ID: bWluaW8=
+  RCLONE_CONFIG_S3_ENDPOINT: aHR0cDovL21pbmlvLmt1YmVmbG93LnN2Yy5jbHVzdGVyLmxvY2FsOjkwMDA=
+  RCLONE_CONFIG_S3_ENV_AUTH: ZmFsc2U=
+  RCLONE_CONFIG_S3_PROVIDER: bWluaW8=
+  RCLONE_CONFIG_S3_SECRET_ACCESS_KEY: M05aSFRSQzhOVTcxSFJJVFZWTUJEVDJVTjJBMk5L
+  RCLONE_CONFIG_S3_TYPE: czM=
+kind: Secret
+metadata:
+  name: seldon-init-container-secret
+  namespace: admin
+```
+
+```sh
+microk8s kubectl apply -f ./seldon-init-container-secret.yaml
 ```
 
 ### Running the demo

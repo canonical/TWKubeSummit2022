@@ -72,6 +72,10 @@ Enable addons metallb
 # IPADDR=$(ip -4 -j route | jq -r '.[] | select(.dst | contains("default")) | .prefsrc')
 microk8s enable metallb:$IPADDR-$IPADDR
 # Or microk8s enable metallb:10.64.140.43-10.64.140.49
+```
+
+```sh
+# Check addons status with kubectl
 microk8s kubectl rollout status deployments/hostpath-provisioner -n kube-system -w
 microk8s kubectl rollout status deployments/coredns -n kube-system -w
 microk8s kubectl rollout status daemonset.apps/speaker -n metallb-system -w
