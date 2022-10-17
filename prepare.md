@@ -20,11 +20,13 @@ sudo multipass set local.driver=libvirt
 multipass get local.driver
 
 multipass launch \
-    -c 4 -m 8G -d 50G \
+    -c 6 -m 10G -d 50G \
     -n k8s-summit \
     -vvvv \
     https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
 virsh list
+
+# exec into vm
 multipass shell k8s-summit
 ```
 
@@ -63,6 +65,8 @@ Enable addons dns and hostpath-storage
 ```sh
 microk8s status
 microk8s enable dns hostpath-storage
+
+# Check
 microk8s status --wait-ready
 ```
 
@@ -85,6 +89,8 @@ microk8s kubectl rollout status daemonset.apps/speaker -n metallb-system -w
 
 ```sh
 juju bootstrap microk8s micro --debug
+
+# Check status
 microk8s kubectl get namespace | grep controller | awk '{print $1}' | xargs microk8s kubectl get all -n
 juju controllers
 juju clouds
