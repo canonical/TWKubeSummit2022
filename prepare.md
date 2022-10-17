@@ -60,6 +60,8 @@ alias kubectl='microk8s kubectl'
 
 ## Upstream too many open files issue
 
+* workaround for upstream issues in kubeflow: https://github.com/kubeflow/manifests/issues/2087#issuecomment-1139260511
+
 ```sh
 $ sudo vim /etc/sysctl.conf
 ```
