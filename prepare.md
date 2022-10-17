@@ -36,7 +36,6 @@ Inside virtual machine
 
 ```sh
 sudo snap install microk8s --channel=1.24/stable --classic
-sudo snap install juju --classic
 
 snap list
 ```
@@ -47,18 +46,34 @@ snap list
 # add the user ubuntu to the 'microk8s' group
 sudo usermod -a -G microk8s ubuntu
 sudo chown -f -R ubuntu ~/.kube
-# reload the user groups
+# reload the user groups or reboot
 newgrp microk8s
 ```
 
-
-## Configure microk8s
+## microk8s alias(optional)
 
 Add alias in `~/.bash_aliases`
 
 ```sh
 alias kubectl='microk8s kubectl'
 ```
+
+## Upstream too many open files issue
+
+```sh
+$ sudo vim /etc/sysctl.conf
+```
+
+
+```yaml
+fs.inotify.max_user_instances=1280
+fs.inotify.max_user_watches=655360
+```
+
+Then reboot the machine
+
+
+## Configure microk8s
 
 Enable addons dns and hostpath-storage
 
@@ -88,6 +103,7 @@ microk8s kubectl rollout status daemonset.apps/speaker -n metallb-system -w
 ## juju bootstrap
 
 ```sh
+sudo snap install juju --classic
 juju bootstrap microk8s micro --debug
 
 # Check status
