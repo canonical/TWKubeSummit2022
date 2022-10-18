@@ -8,6 +8,20 @@
 
 ## Create virtual machine
 
+Platform for virtual machine
+Multipass: https://multipass.run/docs
+
+MacOS
+Homebrew Installation if need
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+Windows
+Linux
+Other reference for how to use multipass
+
+https://computingforgeeks.com/run-ubuntu-virtual-machines-on-linux-macos-using-multipass/
+https://www.how2shout.com/linux/how-to-install-mutliple-ubuntu-vms-using-multipass-on-ubunut-20-04/
+
+
 ```sh
 # switch multipass driver to libvirt(optional)
 sudo apt install libvirt-daemon-system
