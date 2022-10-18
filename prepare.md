@@ -3,24 +3,23 @@
 ## Reqirement
 
 * [multipass](https://multipass.run/)
-* kvm and [virsh](https://www.libvirt.org/manpages/virsh.html)
+* kvm and [virsh](https://www.libvirt.org/manpages/virsh.html) (Optional)
 * Virtual machine with 10GB memory, 6CPU and 50GB disk space
 
-## Create virtual machine
 
-Platform for virtual machine
+## Platform for virtual machine
+
 Multipass: https://multipass.run/docs
 
-MacOS
-Homebrew Installation if need
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-Windows
-Linux
-Other reference for how to use multipass
+* MacOS
+  * Homebrew Installation if need
+  ``` bash
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+  ```
+* Windows
+* Linux
 
-https://computingforgeeks.com/run-ubuntu-virtual-machines-on-linux-macos-using-multipass/
-https://www.how2shout.com/linux/how-to-install-mutliple-ubuntu-vms-using-multipass-on-ubunut-20-04/
-
+## Create virtual machine
 
 ```sh
 # switch multipass driver to libvirt(optional)
@@ -31,7 +30,10 @@ multipass set local.passphrase
 sudo multipass authenticate
 sudo multipass set local.driver=libvirt
 multipass get local.driver
+```
 
+```sh
+# create vm
 multipass launch \
     -c 6 -m 10G -d 50G \
     -n k8s-summit \
