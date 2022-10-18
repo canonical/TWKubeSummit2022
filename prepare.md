@@ -4,14 +4,13 @@
 
 * [multipass](https://multipass.run/)
 * kvm and [virsh](https://www.libvirt.org/manpages/virsh.html)
-* Virtual machine with 8GB memory, 4CPU and 50GB disk space
+* Virtual machine with 10GB memory, 6CPU and 50GB disk space
 
 ## Create virtual machine
 
 ```sh
+# switch multipass driver to libvirt(optional)
 sudo apt install libvirt-daemon-system
-
-# switch multipass driver to libvirt
 sudo snap connect multipass:libvirt
 multipass stop --all
 multipass set local.passphrase
