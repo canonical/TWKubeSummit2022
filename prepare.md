@@ -38,7 +38,8 @@ multipass launch \
     -c 6 -m 10G -d 50G \
     -n k8s-summit \
     -vvvv \
-    https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+    jammy
+
 virsh list
 
 # exec into vm
