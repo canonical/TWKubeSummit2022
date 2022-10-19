@@ -4,8 +4,7 @@
 
 * [multipass](https://multipass.run/)
 * kvm and [virsh](https://www.libvirt.org/manpages/virsh.html) (Optional)
-* Virtual machine with 10GB memory, 6CPU and 50GB disk space
-
+    * Virtual machine with 10GB memory, 6CPU and 50GB disk space
 
 ## Platform for virtual machine
 
@@ -21,16 +20,10 @@ Multipass: https://multipass.run/docs
 
 ## Create virtual machine
 
-```sh
-# switch multipass driver to libvirt(optional)
-sudo apt install libvirt-daemon-system
-sudo snap connect multipass:libvirt
-multipass stop --all
-multipass set local.passphrase
-sudo multipass authenticate
-sudo multipass set local.driver=libvirt
-multipass get local.driver
-```
+
+(Optional)If you want to switch multipass local driver to virsh.
+
+This will create a virtual machien which use 22.04 latest/stable image from offical website.
 
 ```sh
 # create vm
@@ -40,7 +33,8 @@ multipass launch \
     -vvvv \
     jammy
 
-virsh list
+# list virtual machine
+multipass list
 
 # exec into vm
 multipass shell k8s-summit
@@ -51,8 +45,12 @@ multipass shell k8s-summit
 Inside virtual machine
 
 ```sh
+# List package information and channels
+snap info microk8s
+
 sudo snap install microk8s --channel=1.24/stable --classic
 
+# List snap packages & channel
 snap list
 ```
 
@@ -66,7 +64,7 @@ sudo chown -f -R ubuntu ~/.kube
 newgrp microk8s
 ```
 
-## microk8s alias(optional)
+## (Optional) microk8s alias
 
 Add alias in `~/.bash_aliases`
 
@@ -103,25 +101,40 @@ microk8s enable dns hostpath-storage
 microk8s status --wait-ready
 ```
 
+> https://microk8s.io/docs/addon-dns
+> https://microk8s.io/docs/addon-hostpath-storage
+
 Enable addons metallb
 
 ```sh
+microk8s enable metallb:10.64.140.43-10.64.140.49
+
+
+# Or
 # IPADDR=$(ip -4 -j route | jq -r '.[] | select(.dst | contains("default")) | .prefsrc')
-microk8s enable metallb:$IPADDR-$IPADDR
-# Or microk8s enable metallb:10.64.140.43-10.64.140.49
+# microk8s enable metallb:$IPADDR-$IPADDR
 ```
 
+Check addons status with kubectl
+
 ```sh
-# Check addons status with kubectl
 microk8s kubectl rollout status deployments/hostpath-provisioner -n kube-system -w
 microk8s kubectl rollout status deployments/coredns -n kube-system -w
 microk8s kubectl rollout status daemonset.apps/speaker -n metallb-system -w
 ```
 
-## juju bootstrap
+## Install juju 
 
 ```sh
 sudo snap install juju --classic
+```
+
+## juju bootstrap controller
+
+In Juju, a controller is the initial cloud instance that is created by the juju client during bootstrapping. It is a central piece of Juju, being responsible for implementing all the changes defined by a Juju user.
+
+
+```sh
 juju bootstrap microk8s micro --debug
 
 # Check status
