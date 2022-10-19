@@ -20,9 +20,6 @@ Multipass: https://multipass.run/docs
 
 ## Create virtual machine
 
-
-(Optional)If you want to switch multipass local driver to virsh.
-
 This will create a virtual machien which use 22.04 latest/stable image from offical website.
 
 ```sh
@@ -30,7 +27,6 @@ This will create a virtual machien which use 22.04 latest/stable image from offi
 multipass launch \
     -c 6 -m 10G -d 50G \
     -n k8s-summit \
-    -vvvv \
     jammy
 
 # list virtual machine
