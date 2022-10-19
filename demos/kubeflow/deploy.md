@@ -1,7 +1,7 @@
 ## Deploy kubeflow + mlflow
 
 
-Upstream too many open files issue
+### Upstream too many open files issue
 
 ```sh
 # workaround for upstream issues in kubeflow:
@@ -11,6 +11,36 @@ $ sudo sysctl fs.inotify.max_user_watches=655360
 $ microk8s stop
 $ microk8s start
 ```
+
+Or change in `/etc/sysctl.conf`, then reboot.
+
+```sh
+$ sudo vim /etc/sysctl.conf
+```
+
+```yaml
+fs.inotify.max_user_instances=1280
+fs.inotify.max_user_watches=655360
+```
+
+### Enable addons metallb
+
+```sh
+microk8s enable metallb:10.64.140.43-10.64.140.49
+
+
+# Or
+# IPADDR=$(ip -4 -j route | jq -r '.[] | select(.dst | contains("default")) | .prefsrc')
+# microk8s enable metallb:$IPADDR-$IPADDR
+```
+
+check status
+
+```sh
+microk8s kubectl rollout status daemonset.apps/speaker -n metallb-system -w
+```
+
+### Deploy
 
 ```sh
 $ juju add-model kubeflow
