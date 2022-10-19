@@ -69,7 +69,7 @@ $ juju config dex-auth static-password=admin
 The kubeflow dashboard will available at `$IPADDR.nip.io`
 
 ```sh
-sudo sshuttle -r ubuntu@$INSTANCE_IP_ADDRESS  10.1.123.0/24 --ssh-cmd "ssh -i /var/snap/multipass/common/data/multipassd/ssh-keys/id_rsa
+sudo sshuttle -r ubuntu@$INSTANCE_IP_ADDRESS  10.64.140.1/24 --ssh-cmd "ssh -i /var/snap/multipass/common/data/multipassd/ssh-keys/id_rsa
 ```
 
 > :warning: if you notice that you cannot access the dashboard, please check if
