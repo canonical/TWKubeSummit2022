@@ -8,4 +8,7 @@ In this tutorial, we will deploy kubeflow-lite & cos-lite on microk8s in a local
 
 * [Prepare](./prepare.md)
 * [Kubeflow](./demos/kubeflow/README.md)
-* [cos-lite](./cos-lite.md)
+* [Kubernetes Dashboard](./demos/dashboard/README.md)
+* [Observability](./demos/observability/README.md)
+* [Cos-lite](./demos/cos-lite/README.md)
+
